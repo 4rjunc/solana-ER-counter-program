@@ -49,29 +49,25 @@ pub fn process_instruction(
         //2: Delegate
         ProgramInstruction::Delegate => {
             msg!("Instruction:: Delegate");
-            Ok(())
-            //process_delegate(program_id, accounts)
+            process_delegate(program_id, accounts)
         }
 
         //3: CommitAndUndelegate
         ProgramInstruction::CommitAndUndelegate => {
             msg!("Instruction: CommitAndUndelegate");
-            Ok(())
-            //process_commit_and_undelegate(program_id, accounts)
+            process_commit_and_undelegate(program_id, accounts)
         }
 
         //4: Commit
         ProgramInstruction::Commit => {
             msg!("Instruction: Commit");
-            Ok(())
-            //process_commit(program_id, accounts)
+            process_commit(program_id, accounts)
         }
 
         //5: Undelegate
         ProgramInstruction::Undelegate { pda_seeds } => {
             msg!("Instruction: Undelegate");
-            Ok(())
-            //process_undelegate(program_id, accounts, pda_seeds)
+            process_undelegate(program_id, accounts, pda_seeds)
         }
     }
 }
@@ -173,115 +169,114 @@ pub fn process_increase_counter(
 
 //Delegation
 //State accounts are delegated to the Ephemeral Rollup via the Delegation Program, specifying parameters like lifetime and update frequency.
-//pub fn process_delegate(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-//    // Get accounts
-//    let account_info_iter = &mut accounts.iter();
-//    let initializer = next_account_info(account_info_iter)?;
-//    let system_program = next_account_info(account_info_iter)?;
-//    let pda_to_delegate = next_account_info(account_info_iter)?;
-//    let owner_program = next_account_info(account_info_iter)?;
-//    let delegation_buffer = next_account_info(account_info_iter)?;
-//    let delegation_record = next_account_info(account_info_iter)?;
-//    let delegation_metadata = next_account_info(account_info_iter)?;
-//    let delegation_program = next_account_info(account_info_iter)?;
-//
-//    // Prepare counter pda seeds
-//    let seed_1 = b"counter_account";
-//    let seed_2 = initializer.key.as_ref();
-//    let pda_seeds: &[&[u8]] = &[seed_1, seed_2];
-//
-//    let delegate_accounts = DelegateAccounts {
-//        payer: initializer,
-//        pda: pda_to_delegate,
-//        owner_program,
-//        buffer: delegation_buffer,
-//        delegation_record,
-//        delegation_metadata,
-//        delegation_program,
-//        system_program,
-//    };
-//
-//    let delegate_config = DelegateConfig {
-//        commit_frequency_ms: 30_000,
-//        validator: None,
-//    };
-//
-//    delegate_account(delegate_accounts, pda_seeds, delegate_config)?;
-//
-//    Ok(())
-//}
+pub fn process_delegate(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let pda_to_delegate = next_account_info(account_info_iter)?;
+    let owner_program = next_account_info(account_info_iter)?;
+    let delegation_buffer = next_account_info(account_info_iter)?;
+    let delegation_record = next_account_info(account_info_iter)?;
+    let delegation_metadata = next_account_info(account_info_iter)?;
+    let delegation_program = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+
+    // Prepare counter pda seeds
+    let seed_1 = b"counter_account";
+    let seed_2 = initializer.key.as_ref();
+    let pda_seeds: &[&[u8]] = &[seed_1, seed_2];
+
+    let delegate_accounts = DelegateAccounts {
+        payer: initializer,
+        pda: pda_to_delegate,
+        owner_program,
+        buffer: delegation_buffer,
+        delegation_record,
+        delegation_metadata,
+        delegation_program,
+        system_program,
+    };
+
+    let delegate_config = DelegateConfig {
+        commit_frequency_ms: 30_000,
+        validator: None,
+    };
+    delegate_account(delegate_accounts, pda_seeds, delegate_config)?;
+    Ok(())
+}
+
 //// Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
-//pub fn process_undelegate(
-//    program_id: &Pubkey,
-//    accounts: &[AccountInfo],
-//    pda_seed: Vec<Vec<u8>>,
-//) -> ProgramResult {
-//    //Iterate Accounts
-//    let accounts_iter = &mut accounts.iter();
-//    let delegate_pda = next_account_info(accounts_iter)?;
-//    let delegation_buffer = next_account_info(accounts_iter)?;
-//    let initializer = next_account_info(accounts_iter)?;
-//    let system_program = next_account_info(accounts_iter)?;
-//
-//    //CPI call
-//    undelegate_account(
-//        delegate_pda,
-//        program_id,
-//        delegation_buffer,
-//        initializer,
-//        system_program,
-//        pda_seed,
-//    );
-//    Ok(())
-//}
-//
-////Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
-//pub fn process_commit_and_undelegate(
-//    _program_id: &Pubkey,
-//    accounts: &[AccountInfo],
-//) -> ProgramResult {
-//    // Get accounts
-//    let account_info_iter = &mut accounts.iter();
-//    let initializer = next_account_info(account_info_iter)?;
-//    let counter_account = next_account_info(account_info_iter)?;
-//    let magic_program = next_account_info(account_info_iter)?;
-//    let magic_context = next_account_info(account_info_iter)?;
-//
-//    if !initializer.is_signer {
-//        msg!("Initializer {} should be the signer", initializer.key);
-//        return Err(ProgramError::MissingRequiredSignature);
-//    }
-//
-//    commit_and_undelegate_accounts(
-//        initializer,
-//        vec![counter_account],
-//        magic_context,
-//        magic_program,
-//    )?;
-//
-//    Ok(())
-//}
-//
-//// Schedules sync of counter from ER to Base Layer (called on ER)
-//pub fn process_commit(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-//    //Iterate Accounts
-//    let accounts_iter = &mut accounts.iter();
-//    let initializer = next_account_info(accounts_iter)?;
-//    let counter_account = next_account_info(accounts_iter)?;
-//    let magic_program = next_account_info(accounts_iter)?;
-//    let magic_context = next_account_info(accounts_iter)?;
-//
-//    if !initializer.is_signer {
-//        msg!("Initializer {} should be the signer", initializer.key);
-//        return Err(ProgramError::MissingRequiredSignature);
-//    }
-//
-//    commit_accounts(
-//        initializer,
-//        vec![counter_account],
-//        magic_context,
-//        magic_program,
-//    )?;
-//
-//    Ok(())
-//}
+pub fn process_undelegate(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    pda_seed: Vec<Vec<u8>>,
+) -> ProgramResult {
+    //Iterate Accounts
+    let accounts_iter = &mut accounts.iter();
+    let delegate_pda = next_account_info(accounts_iter)?;
+    let delegation_buffer = next_account_info(accounts_iter)?;
+    let initializer = next_account_info(accounts_iter)?;
+    let system_program = next_account_info(accounts_iter)?;
+
+    //CPI call
+    let _ = undelegate_account(
+        delegate_pda,
+        program_id,
+        delegation_buffer,
+        initializer,
+        system_program,
+        pda_seed,
+    );
+    Ok(())
+}
+
+//Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
+pub fn process_commit_and_undelegate(
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
+) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
+
+    if !initializer.is_signer {
+        msg!("Initializer {} should be the signer", initializer.key);
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    commit_and_undelegate_accounts(
+        initializer,
+        vec![counter_account],
+        magic_context,
+        magic_program,
+    )?;
+
+    Ok(())
+}
+
+// Schedules sync of counter from ER to Base Layer (called on ER)
+pub fn process_commit(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+    //Iterate Accounts
+    let accounts_iter = &mut accounts.iter();
+    let initializer = next_account_info(accounts_iter)?;
+    let counter_account = next_account_info(accounts_iter)?;
+    let magic_program = next_account_info(accounts_iter)?;
+    let magic_context = next_account_info(accounts_iter)?;
+
+    if !initializer.is_signer {
+        msg!("Initializer {} should be the signer", initializer.key);
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    commit_accounts(
+        initializer,
+        vec![counter_account],
+        magic_context,
+        magic_program,
+    )?;
+
+    Ok(())
+}
