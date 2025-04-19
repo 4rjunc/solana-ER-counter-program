@@ -1,0 +1,15 @@
+{
+  "name": "ephemeral-counter",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "test": "NODE_OPTIONS='--no-deprecation' yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+  }
+}
