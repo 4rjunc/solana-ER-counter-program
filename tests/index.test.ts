@@ -127,10 +127,9 @@ describe("Running tests:", async function(this: Suite) {
       }
     );
     console.log("txId:", txHash)
-
   });
-  it("Delegate counter to ER", async function() {
 
+  it("Delegate counter to ER", async function() {
     // 2: Delegate
     // Create, send and confirm transaction
     const tx = new web3.Transaction();
@@ -140,12 +139,6 @@ describe("Running tests:", async function(this: Suite) {
         pubkey: userKeypair.publicKey,
         isSigner: true,
         isWritable: true,
-      },
-      // System Program
-      {
-        pubkey: web3.SystemProgram.programId,
-        isSigner: false,
-        isWritable: false,
       },
       // Counter Account
       {
@@ -183,6 +176,12 @@ describe("Running tests:", async function(this: Suite) {
         isSigner: false,
         isWritable: false,
       },
+      // System Program
+      {
+        pubkey: web3.SystemProgram.programId,
+        isSigner: false,
+        isWritable: false,
+      },
     ]
     const serializedInstructionData = Buffer.from(CounterInstruction.Delegate, 'hex')
     const delegateIx = new web3.TransactionInstruction({
@@ -200,9 +199,9 @@ describe("Running tests:", async function(this: Suite) {
     console.log("txId:", txHash)
 
   });
+
   it("Increase counter on ER (1)", async function() {
     const start = Date.now();
-
     // 1: IncreaseCounter
     // Create, send and confirm transaction
     const tx = new web3.Transaction();
@@ -246,11 +245,10 @@ describe("Running tests:", async function(this: Suite) {
 
     const duration = Date.now() - start;
     console.log(`(${duration}ms)`);
-
   });
+
   it("Commit counter state on ER to Solana", async function() {
     const start = Date.now();
-
     // 3: Commit
     // Create, send and confirm transaction
     const tx = new web3.Transaction();
@@ -294,15 +292,12 @@ describe("Running tests:", async function(this: Suite) {
       }
     );
     console.log("txId:", txHash)
-
     const duration = Date.now() - start;
     console.log(`(${duration}ms)`);
-
   });
+
   it("Increase counter on ER (2)", async function() {
-
     const start = Date.now();
-
     // 1: IncreaseCounter
     // Create, send and confirm transaction
     const tx = new web3.Transaction();
@@ -346,12 +341,10 @@ describe("Running tests:", async function(this: Suite) {
 
     const duration = Date.now() - start;
     console.log(`(${duration}ms)`);
-
   });
+
   it("Commit and undelegate counter on ER to Solana", async function() {
-
     const start = Date.now();
-
     // 3: CommitAndUndelegate
     // Create, send and confirm transaction
     const tx = new web3.Transaction();
