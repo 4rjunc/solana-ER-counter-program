@@ -1,12 +1,12 @@
 [package]
 name = "ephemeral-counter"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
-borsh = "1.5.7"
+borsh = "1.5.1"
 ephemeral-rollups-sdk = "0.2.4"
-solana-program = "2.2.1"
+solana-program = "1.18.26"
 
 [lib]
 crate-type=["cdylib", "lib"]
