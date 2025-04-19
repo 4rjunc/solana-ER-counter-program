@@ -1,3 +1,4 @@
+// state.rs
 use borsh::{BorshDeserialize, BorshSerialize};
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
@@ -6,5 +7,5 @@ pub struct Counter {
 }
 
 impl Counter {
-    pub const USIZE: usize = 8;
+    pub const SIZE: usize = 8;
 }
